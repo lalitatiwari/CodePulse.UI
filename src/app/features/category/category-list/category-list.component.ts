@@ -12,6 +12,12 @@ import { Router } from '@angular/router';
 })
 export class CategoryListComponent implements OnInit, OnDestroy {
 
+  searchText?: string
+  totalCount?: number
+  pageNumber = 1;
+  pageSize = 3;
+  list:number[]=[];
+
   deleteSubscriprition?: Subscription;
   constructor(private categoryService: CategoryService,
     private router: Router) { }
@@ -22,11 +28,36 @@ export class CategoryListComponent implements OnInit, OnDestroy {
 
   categories: Category[] = []
   ngOnInit(): void {
-    this.categoryService.getAllCategories().subscribe(data => {
-      this.categories = data;
-    }
 
+
+    //pagination
+    this.categoryService.getCategoryCount().subscribe({
+      next: (value) => {
+        this.totalCount = value;
+        this.list= new Array(Math.ceil(value/this.pageSize)) //11/5= 2.5 =3
+
+        this.categoryService.getAllCategories(this.searchText, undefined,undefined,this.pageNumber,this.pageSize)
+        .subscribe(data => {
+          this.categories = data;
+        })
+
+      }
+    }
     )
+  }
+
+
+
+  search(): void {
+    this.ngOnInit();
+
+    // this.categoryService.getAllCategories(this.searchText).subscribe({
+    //   next:(response)=>{
+    //     this.categories =response;
+
+    //   }
+    // })
+    console.log(this.searchText);
   }
 
   deleteCategoryById(id: string) {//console.log(id);
@@ -42,5 +73,40 @@ export class CategoryListComponent implements OnInit, OnDestroy {
     );
   }
 
+  sort(column?: string, sortDirection?: string) {
+    this.categoryService.getAllCategories(this.searchText, column, sortDirection).subscribe({
+      next: (response) => {
+        this.categories = response;
+        console.log('sorted');
+      }
+    })
+  }
 
+  setPage(pageNumber:number)
+  {
+    this.pageNumber= pageNumber;
+    console.log("current page"+pageNumber)
+
+    this.categoryService.getAllCategories(this.searchText, undefined,undefined,pageNumber,this.pageSize)
+    .subscribe(data => {
+      this.categories = data;
+    })
+  }
+
+  getNextpage()
+  { 
+    if(this.pageNumber+1> this.list.length)
+    {return;}
+    this.setPage(this.pageNumber+1);
+   // console.log("current page from Next"+this.pageNumber)
+  }
+
+  getPreviousPage()
+  {
+    if(this.pageNumber-1<1)
+      {return;}
+    this.setPage(this.pageNumber-1);
+   // console.log("current page from previous"+this.pageNumber)
+
+  }
 }

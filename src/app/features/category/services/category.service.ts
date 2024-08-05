@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AddCategoryRequest } from '../models/add-category-request.model';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Category } from '../models/get-category-request.model';
 import { environment } from '../../../../environments/environment';
@@ -28,8 +28,31 @@ export class CategoryService {
     return this.http.post<void>(`${environment.apiUrl}/Categories?addAuth=true`,model);
   }
 
-  getAllCategories():Observable<Category[]>{
-    return this.http.get<Category[]>(`${environment.apiUrl}/Categories`);
+  getAllCategories(query?:string, sortBy?:string, sortDirection?:string, pageNumber?:number, pageSize?:number)
+  :Observable<Category[]>{
+    let params= new HttpParams();
+    if(query)
+    {
+      params=params.set('query',query);
+    }
+    if(sortBy)
+    {
+      params= params.set('sortBy',sortBy);
+    }
+    if(sortDirection)
+    {
+      params= params.set('sortDirection',sortDirection);
+
+    }
+
+    if(pageNumber){
+      params= params.set('pageNumber',pageNumber)
+    }
+    if(pageSize)
+    {
+      params=params.set('pageSize',pageSize)
+    }
+    return this.http.get<Category[]>(`${environment.apiUrl}/Categories`,{params:params});
   }
 
   getCategoryById(id:string): Observable<Category>
@@ -49,5 +72,9 @@ export class CategoryService {
   deleteCategoryById(id: string): Observable<Category>
     {
       return this.http.delete<Category>(`${environment.apiUrl}/categories/${id}?addAuth=true`);
+    }
+
+    getCategoryCount():Observable<number>{
+      return this.http.get<number>(`${environment.apiUrl}/categories/count`);
     }
 }
