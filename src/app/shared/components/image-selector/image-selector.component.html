@@ -1,0 +1,52 @@
+<div class="card h-100 mt-5">
+    <div class="card-header">
+        <h3 class="card-title">Images</h3>
+    </div>
+    <div class="card-body">
+        <div class="d-flex flex-md-row flex-sm-column flex-wrap">
+            <div class="col-8 p-4" style="overflow-y: scroll;">
+
+                <ng-container *ngIf="blogImages">
+
+                    <div class="d-flex flex-wrap">
+                        <div *ngFor="let image of blogImages" (click)="selectImage(image)"
+                            style="min-width:100px;justify-content:center; cursor: pointer;"
+                            class="me-1 bg-white d-flex align-items-center p-2 border">
+                            <img src="{{image.url}}" [title]="image.title" style="width:100px;height:100px"
+                                class="img-fluid my-2">
+                            <span class="mt-3">{{image.title}}</span>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+            <div class="col-4 p-4 bg-light">
+                <h5>Upload Images</h5>
+                <form #form="ngForm" (ngSubmit)="uploadImage()">
+                    <div class="mt-3">
+
+                        <input type="file" class="form-control" id="file" (change)="onFileUploadChange($event)">
+                    </div>
+
+                    <div class="mt-3">
+
+                        <input class="form-control" type="text" id="fileName" [(ngModel)]="fileName"
+                            placeholder="Enter file name" name="fileName">
+                    </div>
+
+                    <div class="mt-3">
+
+                        <input class="form-control" type="text" id="title" [(ngModel)]="title" placeholder="Title"
+                            name="title">
+                    </div>
+
+
+                    <div class="mt-3">
+
+                        <input class="btn btn-dark" type="submit" value="Upload">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
